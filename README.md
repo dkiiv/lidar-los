@@ -17,7 +17,7 @@ conda install -y -c conda-forge pybind11 cmake ninja compilers rasterio pdal
 
 Build
 ```
-python src/setup.py build_ext --inplace
+python setup.py build_ext --inplace
 ```
 
 Rebuild
