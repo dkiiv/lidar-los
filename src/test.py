@@ -1,6 +1,16 @@
 import numpy as np
 import los
 
+def los_runtime():
+    p = los.los_probability(
+      dem,
+      dem.shape[1],
+      dem.shape[0],
+      x0, y0, z0,
+      x1, y1, z1
+    )
+    return p
+
 # Grid size
 width = 1000
 height = 1000
@@ -12,16 +22,6 @@ dem = np.ascontiguousarray(dem)
 # Observer positions
 x0, y0, z0 = 100.0, 100.0, 10.0
 x1, y1, z1 = 900.0, 900.0, 10.0
-
-def los_runtime():
-    p = los.los_probability(
-      dem,
-      dem.shape[1],
-      dem.shape[0],
-      x0, y0, z0,
-      x1, y1, z1
-    )
-    return p
 
 print("=== Test 1: Flat terrain (should be visible) ===")
 print("LOS probability:", los_runtime())
