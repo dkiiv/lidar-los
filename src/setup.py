@@ -4,7 +4,7 @@ import pybind11
 ext_modules = [
     Extension(
         "los",
-        ["src/los.cpp"],
+        ["los.cpp"],
         include_dirs=[pybind11.get_include()],
         language="c++"
     ),

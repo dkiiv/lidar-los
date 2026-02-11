@@ -1,30 +1,36 @@
 import numpy as np
 import los
 
-# Create fake DEM for example
+# Grid size
 width = 1000
 height = 1000
-cell_size = 1.0
 
+# Create flat DEM at 0m
 dem = np.zeros((height, width), dtype=np.float32)
+dem = np.ascontiguousarray(dem)
 
-# Add a hill in the middle
-dem[500, 500] = 50.0
-
-origin_x = 0.0
-origin_y = 0.0
-
-# Two world points
+# Observer positions
 x0, y0, z0 = 100.0, 100.0, 10.0
 x1, y1, z1 = 900.0, 900.0, 10.0
 
-p = los.los_probability(
-  dem,
-  origin_x,
-  origin_y,
-  cell_size,
-  x0, y0, z0,
-  x1, y1, z1
-)
+def los_runtime():
+    p = los.los_probability(
+      dem,
+      dem.shape[1],
+      dem.shape[0],
+      x0, y0, z0,
+      x1, y1, z1
+    )
+    return p
 
-print("LOS probability:", p)
+print("=== Test 1: Flat terrain (should be visible) ===")
+print("LOS probability:", los_runtime())
+
+# Add hill in the middle
+dem[500, 500] = 50.0
+print("\n=== Test 2: Add blocking hill (should be blocked) ===")
+print("LOS probability:", los_runtime())
+
+z0, z1 = 100.0, 100.0
+print("\n=== Test 3: Raise observers above hill (should be visible) ===")
+print("LOS probability:", los_runtime())
