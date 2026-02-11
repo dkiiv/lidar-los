@@ -15,8 +15,16 @@ conda activate los-env
 conda install -y -c conda-forge pybind11 cmake ninja compilers rasterio pdal
 ```
 
+Build
 ```
 python src/setup.py build_ext --inplace
+```
+
+Rebuild
+```
+rm -rf build
+rm los*.so
+python setup.py build_ext --inplace
 ```
 
 Import `los.cpython-XXX.so` into python runtime

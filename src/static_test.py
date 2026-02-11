@@ -2,14 +2,13 @@ import numpy as np
 import los
 
 def los_runtime():
-    p = los.los_probability(
+    return los.los_probability(
       dem,
       dem.shape[1],
       dem.shape[0],
       x0, y0, z0,
       x1, y1, z1
     )
-    return p
 
 # Grid size
 width = 1000
