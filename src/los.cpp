@@ -4,7 +4,7 @@
 
 namespace py = pybind11;
 
-double los_probability(
+double los_boolean(
     py::array_t<float, py::array::c_style | py::array::forcecast> heightmap,
     int width,
     int height,
@@ -14,30 +14,80 @@ double los_probability(
     auto buf = heightmap.request();
     float* ptr = static_cast<float*>(buf.ptr);
 
-    int steps = 500;
+    // Direction
+    double dx = x1 - x0;
+    double dy = y1 - y0;
+    double dz = z1 - z0;
 
-    for (int i = 0; i < steps; i++) {
-        double t = static_cast<double>(i) / steps;
+    // Current grid cell
+    int x = static_cast<int>(std::floor(x0));
+    int y = static_cast<int>(std::floor(y0));
 
-        double x = x0 + t * (x1 - x0);
-        double y = y0 + t * (y1 - y0);
-        double z = z0 + t * (z1 - z0);
+    int endX = static_cast<int>(std::floor(x1));
+    int endY = static_cast<int>(std::floor(y1));
 
-        int xi = static_cast<int>(x);
-        int yi = static_cast<int>(y);
+    int stepX = (dx > 0) ? 1 : -1;
+    int stepY = (dy > 0) ? 1 : -1;
 
-        if (xi < 0 || yi < 0 || xi >= width || yi >= height)
+    double tMaxX, tMaxY;
+    double tDeltaX, tDeltaY;
+
+    if (dx != 0) {
+        double nextGridX = (stepX > 0) ? (x + 1.0) : x;
+        tMaxX = (nextGridX - x0) / dx;
+        tDeltaX = 1.0 / std::abs(dx);
+    } else {
+        tMaxX = std::numeric_limits<double>::infinity();
+        tDeltaX = tMaxX;
+    }
+
+    if (dy != 0) {
+        double nextGridY = (stepY > 0) ? (y + 1.0) : y;
+        tMaxY = (nextGridY - y0) / dy;
+        tDeltaY = 1.0 / std::abs(dy);
+    } else {
+        tMaxY = std::numeric_limits<double>::infinity();
+        tDeltaY = tMaxY;
+    }
+
+    while (true) {
+
+        if (x < 0 || y < 0 || x >= width || y >= height)
             return 0.0;
 
-        float terrain = ptr[yi * width + xi];
+        // Compute parametric t along ray
+        double t;
 
-        if (terrain > z)
+        if (std::abs(dx) > std::abs(dy))
+            t = (x - x0) / dx;
+        else
+            t = (y - y0) / dy;
+
+        if (t < 0) t = 0;
+        if (t > 1) t = 1;
+
+        double rayHeight = z0 + t * dz;
+
+        float terrain = ptr[y * width + x];
+
+        if (terrain > rayHeight)
             return 0.0;
+
+        if (x == endX && y == endY)
+            break;
+
+        if (tMaxX < tMaxY) {
+            tMaxX += tDeltaX;
+            x += stepX;
+        } else {
+            tMaxY += tDeltaY;
+            y += stepY;
+        }
     }
 
     return 1.0;
 }
 
 PYBIND11_MODULE(los, m) {
-    m.def("los_probability", &los_probability);
+    m.def("los_boolean", &los_boolean);
 }

@@ -2,7 +2,7 @@ import numpy as np
 import los
 
 def los_runtime():
-    return los.los_probability(
+    return los.los_boolean(
       dem,
       dem.shape[1],
       dem.shape[0],
@@ -23,13 +23,13 @@ x0, y0, z0 = 100.0, 100.0, 10.0
 x1, y1, z1 = 900.0, 900.0, 10.0
 
 print("=== Test 1: Flat terrain (should be visible) ===")
-print("LOS probability:", los_runtime())
+print("LOS?:", los_runtime())
 
 # Add hill in the middle
 dem[500, 500] = 50.0
 print("\n=== Test 2: Add blocking hill (should be blocked) ===")
-print("LOS probability:", los_runtime())
+print("LOS?:", los_runtime())
 
 z0, z1 = 100.0, 100.0
 print("\n=== Test 3: Raise observers above hill (should be visible) ===")
-print("LOS probability:", los_runtime())
+print("LOS?:", los_runtime())
