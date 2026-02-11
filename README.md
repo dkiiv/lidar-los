@@ -2,16 +2,20 @@
 LOS for 2 points in point cloud
 
 ## Prereqs
-Python;
-`pip install pybind11`
+> conda
 
-`pip install pdal`
 
 ## General order
 > USGS LAZ (LiDAR)  →  DEM raster (preprocessing)  →  processor, currently classical eventually ML
 
 ### Build it -- classical
-``python setup.py build_ext --inplace``
+```
+conda create -y -n los-env python=3.11
+conda activate los-env
+conda install -y -c conda-forge pybind11 cmake ninja compilers rasterio pdal
+```
+
+``python src/setup.py build_ext --inplace``
 
 Import `los.cpython-XXX.so` into python runtime
 ```
